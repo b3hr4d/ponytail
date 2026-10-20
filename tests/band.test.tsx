@@ -245,10 +245,10 @@ const buttonsBeside = (tree: unknown, key: string): string[] | undefined => {
   return undefined
 }
 
-test('the band switches between compact and details on every surface', async ($, on) => {
+test('the band switches between compact and details on terminal and desktop', async ($, on) => {
   mock.clock(on)
   mock.store(on)
-  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
+  for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ plugin: 'ponytail', surface, ...BAND })
     expect(await ui.find({ key: 'level' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
@@ -260,7 +260,7 @@ test('the band switches between compact and details on every surface', async ($,
     expect(await ui.find({ key: 'level-ultra' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
     expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['copy', 'review', 'audit', 'board', 'details'])
-    if (surface !== 'terminal') expect(await ui.find({ type: 'Svg' })).toBeDefined()
+    if (surface === 'desktop') expect(await ui.find({ type: 'Svg' })).toBeDefined()
     else expect(await ui.find({ type: 'Text', text: /cost/ })).toBeDefined()
 
     await ui.press({ key: 'details' })

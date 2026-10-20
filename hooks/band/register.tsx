@@ -367,7 +367,7 @@ export const register: Register = (on, options) => {
 
     const { Box, Text, Button } = $.ui.resolve(e)
     const stack = (mine: NonNullable<typeof below>) => (below ? <Box flexDirection="column">{mine}{below}</Box> : mine)
-    // Two groups, so a band too narrow for one line moves the buttons down together. Steps, not cells: VS Code draws gap={2} as two empty rows.
+    // Two groups, so a band too narrow for one line moves the buttons down together. Steps, not cells: the desktop draws gap={2} as two empty rows.
     const row = (left: RenderChildren, right: RenderChildren) => (
       <Box flexDirection="row" flexWrap="wrap" justifyContent="space-between" alignItems="center" gap="md" width="100%">
         <Box flexDirection="row" flexWrap="wrap" alignItems="center" gap="md">{left}</Box>
@@ -466,8 +466,8 @@ export const register: Register = (on, options) => {
         </Box>
       </Box>
     )
-    // Text glyphs make broken lines in a proportional font (desktop, VS Code, phone); an SVG draws real ones.
-    if (e.surface !== 'terminal') {
+    // Text glyphs make broken lines in the desktop's proportional font; an SVG draws real ones.
+    if (e.surface === 'desktop') {
       const { Svg } = $.ui.resolve(e)
       metrics = <Svg source={metricsSvg(cols, b.turnCosts)} alt={cols.map(c => `${c.label} ${c.value}`).join(', ')} />
     }
