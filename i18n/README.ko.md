@@ -113,7 +113,7 @@ Ponytail은 그 사람을 당신의 AI 에이전트 안에 넣는다.
   <img src="../assets/band/band.png" width="880" alt="Claude Code 프롬프트 위의 ponytail 밴드. 자세히 보기: 비용 $23.80, 마지막 턴 $1.14, 턴당 평균 $0.72; 토큰 56.7M, 출력 168k, 33턴; 에이전트 시간 52m 14s; 재사용 71%, 5개 재사용, 2개 새로 작성; 마지막 변경 뒤 테스트 통과. 간단히 보기는 같은 내용을 한 줄로 보여 준다.">
 </p>
 
-이제 Claude Code에서 ponytail은 프롬프트 위에 밴드를 보여 준다: 지금 작업에 든 비용, 사용한 토큰과 에이전트 시간, 새 코드를 쓰는 대신 기존 코드를 얼마나 재사용했는지, 마지막 변경 뒤에 테스트가 통과했는지. 버튼으로 레벨을 바꾸고, `/ponytail-review`나 `/ponytail-audit`를 실행하고, 작업을 Markdown으로 복사하고, 밴드를 한 줄로 접을 수 있다. 필요 없다면 `/ponytail band`로 숨기고, 같은 명령으로 다시 켤 수 있다. Claude Code 2.1.290 이상이 필요하며, 터미널이나 데스크톱 앱에서 보인다. VS Code 채팅 패널, 클라우드 세션, `claude -p`에서는 보이지 않는다.
+이제 Claude Code에서 ponytail은 프롬프트 위에 밴드를 보여 준다: 지금 작업에 든 비용, 사용한 토큰과 에이전트 시간, 새 코드를 쓰는 대신 기존 코드를 얼마나 재사용했는지, 마지막 변경 뒤에 테스트가 통과했는지. 버튼으로 레벨을 바꾸고, `/ponytail-review`나 `/ponytail-audit`를 실행하고, 작업을 Markdown으로 복사하고, 밴드를 한 줄로 접을 수 있다. 필요 없다면 **Hide**나 `/ponytail band`로 숨기고, `/ponytail band`로 다시 켤 수 있다. Claude Code 2.1.290 이상이 필요하며, 터미널이나 데스크톱 앱에서 보인다. VS Code 채팅 패널, 클라우드 세션, `claude -p`에서는 보이지 않는다.
 
 <p align="center">
   <img src="../assets/band/board.png" width="880" alt="ponytail 보드, 로컬 페이지: 최근 30일 동안 세션 61개, 에이전트 시간 20h 13m, $285.30, 토큰 492.5M; 프로젝트별 에이전트 시간 추이; 테스트 결과가 붙은 최근 세션; 활동한 날과 연속 기록.">

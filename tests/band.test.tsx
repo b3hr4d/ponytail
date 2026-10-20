@@ -254,7 +254,7 @@ test('the band switches between compact and details on terminal and desktop', as
     expect(await ui.find({ key: 'board' })).toBeDefined()
     expect(await ui.find({ key: 'level-ultra' })).toBeUndefined()
     // In a group of their own, so a narrow band moves them down together, not one by one.
-    expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['review', 'audit', 'board', 'details'])
+    expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['review', 'audit', 'board', 'details', 'hide'])
 
     await ui.press({ key: 'details' })
     expect(await ui.find({ key: 'level-ultra' })).toBeDefined()
@@ -284,6 +284,37 @@ test('after /ponytail band the band draws nothing', async ($, on) => {
   expect(await ui.find({ key: 'level' })).toBeUndefined()
   expect(await ui.find({ key: 'board' })).toBeUndefined()
   await ui.unmount()
+})
+
+test('hide writes the flag /ponytail band writes, and the band draws nothing', async ($, on) => {
+  mock.clock(on)
+  mock.store(on)
+  const files: Record<string, string> = {}
+  on('env.get', ($, e) => ({ value: e.name === 'HOME' ? '/home/u' : undefined }))
+  on('fs.read', ($, e, next) => (e.path in files ? { value: files[e.path] } : next(e)) as never)
+  on('fs.write', ($, e) => {
+    files[e.path] = e.text
+    return { value: undefined }
+  })
+  const toasts: unknown[] = []
+  on('ui.toast', ($, e) => {
+    toasts.push(e)
+    return { value: undefined }
+  })
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>prompt only</Text>
+  })
+  for (const surface of ['terminal', 'desktop'] as const) {
+    delete files['/home/u/.claude/.ponytail-band']
+    const ui = await $.ui.mount({ plugin: 'ponytail', surface, ...BAND })
+    await ui.press({ key: 'hide' })
+    expect(files['/home/u/.claude/.ponytail-band']).toBe('off')
+    expect(await ui.find({ key: 'board' })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /prompt only/ })).toBeDefined()
+    await ui.unmount()
+  }
+  expect(JSON.stringify(toasts)).toContain('/ponytail band brings it back')
 })
 
 for (const command of ['clear', 'resume']) {

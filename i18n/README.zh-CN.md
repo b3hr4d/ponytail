@@ -113,7 +113,7 @@ Ponytail 把他放进你的 AI 智能体里。
   <img src="../assets/band/band.png" width="880" alt="Claude Code 提示框上方的 ponytail 信息栏。详细模式：成本 $23.80，上一轮 $1.14，每轮平均 $0.72；token 56.7M，输出 168k，33 轮；智能体时间 52m 14s；复用 71%（复用 5 个，新写 2 个）；最后一次改动后测试通过。紧凑模式把同样的内容显示在一行里。">
 </p>
 
-在 Claude Code 中，ponytail 现在会在提示框上方显示一条信息栏：当前任务花了多少钱、用了多少 token 和智能体时间、有多少次复用了已有代码而不是写新代码，以及最后一次改动后测试是否通过。它的按钮可以切换级别、运行 `/ponytail-review` 或 `/ponytail-audit`、把任务复制为 Markdown，还能把信息栏折叠成一行。不想要它？`/ponytail band` 可以隐藏它，同一个命令会让它重新显示。需要 Claude Code 2.1.290 或更高版本，在终端或桌面应用中显示。在 VS Code 聊天面板、云端会话和 `claude -p` 中不会显示。
+在 Claude Code 中，ponytail 现在会在提示框上方显示一条信息栏：当前任务花了多少钱、用了多少 token 和智能体时间、有多少次复用了已有代码而不是写新代码，以及最后一次改动后测试是否通过。它的按钮可以切换级别、运行 `/ponytail-review` 或 `/ponytail-audit`、把任务复制为 Markdown，还能把信息栏折叠成一行。不想要它？**Hide** 或 `/ponytail band` 可以隐藏它，`/ponytail band` 会让它重新显示。需要 Claude Code 2.1.290 或更高版本，在终端或桌面应用中显示。在 VS Code 聊天面板、云端会话和 `claude -p` 中不会显示。
 
 <p align="center">
   <img src="../assets/band/board.png" width="880" alt="ponytail 看板，一个本地页面：最近 30 天 61 个会话，智能体时间 20h 13m，$285.30，token 492.5M；各项目的智能体时间变化；最近的会话及其测试结果；活跃天数和连续天数。">

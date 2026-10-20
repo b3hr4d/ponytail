@@ -360,6 +360,12 @@ export const register: Register = (on, options) => {
     const review = () => run($, 'ponytail:ponytail-review')
     const audit = () => run($, 'ponytail:ponytail-audit')
     const board = () => openBoard($).catch(() => $.ui.toast('ponytail band: could not open the board'))
+    // The flag `/ponytail band` writes, written here: the command would cost a model turn to hide a row.
+    const hide = async () => {
+      await $.fs.write(`${await claudeDir($)}/.ponytail-band`, 'off')
+      $.ui.invalidate('ui.render')
+      $.ui.toast('Band hidden: /ponytail band brings it back')
+    }
     const copy = async () => {
       const done = await $.ui.copy({ text: markdown(snapshot(await load($), startedAt)), surface: e.surface })
       $.ui.toast(done.isCopied ? 'Task copied as Markdown' : `Copy failed: ${done.reason}`)
@@ -413,6 +419,7 @@ export const register: Register = (on, options) => {
             <Button key="audit" plain label="Audit" onPress={audit} />,
             <Button key="board" plain label="Board" onPress={board} />,
             <Button key="details" plain label="Details" onPress={toggle} />,
+            <Button key="hide" plain label="Hide" onPress={hide} />,
           ]
         )
       )
