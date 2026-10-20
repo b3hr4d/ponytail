@@ -245,10 +245,10 @@ const buttonsBeside = (tree: unknown, key: string): string[] | undefined => {
   return undefined
 }
 
-test('the band switches between compact and details on terminal and desktop', async ($, on) => {
+test('the band switches between compact and details on terminal, desktop and VS Code', async ($, on) => {
   mock.clock(on)
   mock.store(on)
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode'] as const) {
     const ui = await $.ui.mount({ plugin: 'ponytail', surface, ...BAND })
     expect(await ui.find({ key: 'level' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
@@ -260,7 +260,7 @@ test('the band switches between compact and details on terminal and desktop', as
     expect(await ui.find({ key: 'level-ultra' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
     expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['copy', 'review', 'audit', 'board', 'details'])
-    if (surface === 'desktop') expect(await ui.find({ type: 'Svg' })).toBeDefined()
+    if (surface !== 'terminal') expect(await ui.find({ type: 'Svg' })).toBeDefined()
     else expect(await ui.find({ type: 'Text', text: /cost/ })).toBeDefined()
 
     await ui.press({ key: 'details' })
@@ -305,7 +305,7 @@ test('hide writes the flag /ponytail band writes, and the band draws nothing', a
     const { Text } = $.ui.resolve(e)
     return <Text>prompt only</Text>
   })
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode'] as const) {
     delete files['/home/u/.claude/.ponytail-band']
     const ui = await $.ui.mount({ plugin: 'ponytail', surface, ...BAND })
     await ui.press({ key: 'hide' })
