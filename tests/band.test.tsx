@@ -233,19 +233,34 @@ const BAND = {
   props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 100, scroll: { offset: 0, bodyRows: 12 }, view: {} },
 } as const
 
-test('the band switches between compact and details on terminal and desktop', async ($, on) => {
+// The keys of the Buttons in the Box that holds the Button keyed `key`.
+const buttonsBeside = (tree: unknown, key: string): string[] | undefined => {
+  const node = tree as { type?: string; props?: { key?: string }; children?: unknown }
+  const kids = [node?.children].flat(Infinity) as (typeof node)[]
+  if (kids.some(k => k?.type === 'Button' && k.props?.key === key)) return kids.filter(k => k?.type === 'Button').map(k => k?.props?.key ?? '')
+  for (const k of kids) {
+    const found = typeof k === 'object' ? buttonsBeside(k, key) : undefined
+    if (found) return found
+  }
+  return undefined
+}
+
+test('the band switches between compact and details on every surface', async ($, on) => {
   mock.clock(on)
   mock.store(on)
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'ponytail', surface, ...BAND })
     expect(await ui.find({ key: 'level' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
     expect(await ui.find({ key: 'level-ultra' })).toBeUndefined()
+    // In a group of their own, so a narrow band moves them down together, not one by one.
+    expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['review', 'audit', 'board', 'details'])
 
     await ui.press({ key: 'details' })
     expect(await ui.find({ key: 'level-ultra' })).toBeDefined()
     expect(await ui.find({ key: 'board' })).toBeDefined()
-    if (surface === 'desktop') expect(await ui.find({ type: 'Svg' })).toBeDefined()
+    expect(buttonsBeside(await ui.drawn(), 'board')).toEqual(['copy', 'review', 'audit', 'board', 'details'])
+    if (surface !== 'terminal') expect(await ui.find({ type: 'Svg' })).toBeDefined()
     else expect(await ui.find({ type: 'Text', text: /cost/ })).toBeDefined()
 
     await ui.press({ key: 'details' })

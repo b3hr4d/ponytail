@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register } from 'claude-code'
+import type { EngineInterface, Register, RenderChildren } from 'claude-code'
 
 import { boardHtml, tasksFrom } from './board'
 import type { Band } from './types'
@@ -367,6 +367,13 @@ export const register: Register = (on, options) => {
 
     const { Box, Text, Button } = $.ui.resolve(e)
     const stack = (mine: NonNullable<typeof below>) => (below ? <Box flexDirection="column">{mine}{below}</Box> : mine)
+    // Two groups, so a band too narrow for one line moves the buttons down together. Steps, not cells: VS Code draws gap={2} as two empty rows.
+    const row = (left: RenderChildren, right: RenderChildren) => (
+      <Box flexDirection="row" flexWrap="wrap" justifyContent="space-between" alignItems="center" gap="md" width="100%">
+        <Box flexDirection="row" flexWrap="wrap" alignItems="center" gap="md">{left}</Box>
+        <Box flexDirection="row" flexWrap="wrap" alignItems="center" gap="md">{right}</Box>
+      </Box>
+    )
 
     const testsText =
       b.tests.state === 'pass'
@@ -383,28 +390,31 @@ export const register: Register = (on, options) => {
 
     if (!b.details) {
       return stack(
-        <Box flexDirection="row" alignItems="center" gap={2} width={e.props.bodyColumns}>
-          {/* A click opens the four levels: one click, one turn, no stops on levels nobody wanted. */}
-          <Button key="level" plain onPress={toggle}>
-            <Text color={b.level === 'off' ? 'inactive' : 'suggestion'}>●</Text> {b.level}
-          </Button>
-          <Text>${b.spent.toFixed(2)}</Text>
-          {last !== undefined && <Text dimColor>last ${last.toFixed(2)}</Text>}
-          <Text dimColor>{elapsed(b.busyMs)}</Text>
-          {reuse !== undefined && <Text>{reuse}% reuse</Text>}
-          {hasDupes && <Text color="warning">{b.dupes.length} duplicate?</Text>}
-          {hasOpen && <Text color="warning">⚠ {b.openCallers.length} callers open</Text>}
-          {testsText !== '' && (
-            <Text color={testsColor} dimColor={b.tests.state === 'stale'}>
-              {testsText}
-            </Text>
-          )}
-          <Box flexGrow={1} />
-          <Button key="review" plain label="Review" onPress={review} />
-          <Button key="audit" plain label="Audit" onPress={audit} />
-          <Button key="board" plain label="Board" onPress={board} />
-          <Button key="details" plain label="Details" onPress={toggle} />
-        </Box>
+        row(
+          [
+            // A click opens the four levels: one click, one turn, no stops on levels nobody wanted.
+            <Button key="level" plain onPress={toggle}>
+              <Text color={b.level === 'off' ? 'inactive' : 'suggestion'}>●</Text> {b.level}
+            </Button>,
+            <Text>${b.spent.toFixed(2)}</Text>,
+            last !== undefined && <Text dimColor>last ${last.toFixed(2)}</Text>,
+            <Text dimColor>{elapsed(b.busyMs)}</Text>,
+            reuse !== undefined && <Text>{reuse}% reuse</Text>,
+            hasDupes && <Text color="warning">{b.dupes.length} duplicate?</Text>,
+            hasOpen && <Text color="warning">⚠ {b.openCallers.length} callers open</Text>,
+            testsText !== '' && (
+              <Text color={testsColor} dimColor={b.tests.state === 'stale'}>
+                {testsText}
+              </Text>
+            ),
+          ],
+          [
+            <Button key="review" plain label="Review" onPress={review} />,
+            <Button key="audit" plain label="Audit" onPress={audit} />,
+            <Button key="board" plain label="Board" onPress={board} />,
+            <Button key="details" plain label="Details" onPress={toggle} />,
+          ]
+        )
       )
     }
 
@@ -456,30 +466,31 @@ export const register: Register = (on, options) => {
         </Box>
       </Box>
     )
-    // Text glyphs make broken lines in the desktop's proportional font; an SVG draws real ones.
-    if (e.surface === 'desktop') {
+    // Text glyphs make broken lines in a proportional font (desktop, VS Code, phone); an SVG draws real ones.
+    if (e.surface !== 'terminal') {
       const { Svg } = $.ui.resolve(e)
       metrics = <Svg source={metricsSvg(cols, b.turnCosts)} alt={cols.map(c => `${c.label} ${c.value}`).join(', ')} />
     }
 
     return stack(
-      <Box flexDirection="column" gap={1} width={e.props.bodyColumns}>
-        <Box flexDirection="row" alignItems="center" gap={1}>
-          {LEVELS.map(level => (
+      <Box flexDirection="column" gap={1} width="100%">
+        {row(
+          LEVELS.map(level => (
             <Button
               key={`level-${level}`}
               label={level}
               {...(level === b.level ? { variant: 'primary' as const } : { plain: true as const, dimColor: true })}
               onPress={() => setLevel(level)}
             />
-          ))}
-          <Box flexGrow={1} />
-          <Button key="copy" plain label="Copy" onPress={copy} />
-          <Button key="review" plain label="Review" onPress={review} />
-          <Button key="audit" plain label="Audit" onPress={audit} />
-          <Button key="board" plain label="Board" onPress={board} />
-          <Button key="details" plain label="Compact" onPress={toggle} />
-        </Box>
+          )),
+          [
+            <Button key="copy" plain label="Copy" onPress={copy} />,
+            <Button key="review" plain label="Review" onPress={review} />,
+            <Button key="audit" plain label="Audit" onPress={audit} />,
+            <Button key="board" plain label="Board" onPress={board} />,
+            <Button key="details" plain label="Compact" onPress={toggle} />,
+          ]
+        )}
         {metrics}
       </Box>
     )
